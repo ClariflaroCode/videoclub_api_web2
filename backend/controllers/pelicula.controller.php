@@ -13,7 +13,7 @@
             $this->queryParamsGenericos = ["sort", "order", "page", "limit"];
         }
         public function  addMovie($req, $res) {            
-            if($this->validateMovies($columns, $_POST)) {
+            if($this->validateMovies($req)) {
                 $movies = $this->model->addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
                 if (is_bool($movies)) {
                     return $res->json("No se pudo insertar la nueva película", 500);
