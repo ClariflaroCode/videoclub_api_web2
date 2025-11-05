@@ -59,11 +59,11 @@
             return $fields;
         }
 
-        public function filtrarMovies($atributo, $valor) {
+        public function filtrarMovies($consulta) {
             $query = $this->db->prepare(
-                "SELECT * FROM pelicula WHERE $atributo = ?"
+                "SELECT * FROM pelicula WHERE = ?"
             );
-            $query->execute([$atributo, $valor]);
+            $query->execute([$consulta]);
             $movies = $query->fetchAll(PDO::FETCH_OBJ);
             return $movies;
         }

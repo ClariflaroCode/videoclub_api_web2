@@ -70,7 +70,7 @@
                         }
                     }
                     
-                    $movies = $this->model->filtrar($condition); 
+                    $movies = $this->model->filtrarMovies($condition); 
                     return $res->json($movies, 200); 
           
                 }
