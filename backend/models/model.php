@@ -54,8 +54,8 @@
                     autor VARCHAR(40) NOT NULL,
                     comentario TEXT NOT NULL,
                     calificacion INT NOT NULL,
-                    id_pelicula INT NO NULL,
-                    FOREIGN KEY (director_id) REFERENCES director(id)
+                    id_pelicula INT NOT NULL,
+                    FOREIGN KEY (id_pelicula) REFERENCES pelicula(id)
                 );
 
                 INSERT INTO director (nombre, sexo, fecha_nacimiento, reputacion, pais_origen, imagen) VALUES
@@ -73,11 +73,9 @@
 
                 INSERT INTO usuario (nombre, email, password) VALUES
                 ('webadmin', 'webadmin@gmail.com', "$hash");
-
-                INSERT INTO resenia (autor, comentario, calificacion, id_pelicula) VALUES 
-                ('Juancho', '', , ); 
+                 
                 INSERT INTO resenia (autor, comentario, calificacion, id_pelicula) VALUES
-                ('Juli', 'jurassic park', 5 , 2);
+                ('Juli', 'Me encantan los dinosaurios y aguante el clamidosaurio', 5 , 2);
 
                 INSERT INTO resenia(autor, comentario, calificacion, id_pelicula) VALUES
                 ('PEPE TOÑO MACÍAS', 'aguante terminatorrrrrrrrrrr', 5, 4);
