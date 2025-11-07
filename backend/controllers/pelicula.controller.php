@@ -12,7 +12,7 @@
             $this->queryParamsGenericos = ["sort", "order", "page", "limit"];
         }
 
-        //POST para /peliculas
+        //POST para /pelicula
         public function  addMovie($req, $res) {   
             //verifico que el usuario este autenticado
             if (empty($req->user)) {
@@ -29,7 +29,7 @@
 
         }
 
-        //PUT para /peliculas/:id
+        //PUT para /pelicula/:id
         public function editMovie($req, $res) {
             if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
@@ -52,7 +52,7 @@
             }
         }
 
-        //DELETE para /peliculas/:id
+        //DELETE para /pelicula/:id
         public function deleteMovie($req, $res) {
             if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
@@ -74,7 +74,7 @@
         }
 
 
-        //GET para /peliculas/:id
+        //GET para /pelicula/:id
         public function getMovie($req, $res){
             $id = $req->params->id; 
             if (!is_int($id) || $id <= 0) {
@@ -92,20 +92,23 @@
         public function getMoviess($req, $res) {
             echo "holaaaa";
         }
-        //GET para /peliculas
+        //GET para /pelicula
         public function getMovies($req, $res){
             
             $queryParams = (array) $req->query; //lo vuelve un arreglo asociativo/diccionario al objeto, asi que sus atributos pasan a ser keys. 
-
+            
             if (count($queryParams) > 0) {
                 $queryKeys = array_keys($queryParams);
                 if (count (array_intersect($queryKeys, $this->queryParamsGenericos)) == 0) { //los query params que hay son de filtrado. No se me ocurre como acumularlos. 
                     //FILTRADO
+                    
                     $columns = $this->model->fetchColumnsMovies();
                     $params_verificados = array_intersect($queryKeys, $columns);
+                    
                     if (count($params_verificados) != count($queryKeys))  {
                         return $res->json("Bad request, revisar los nombres de los parámetros enviados para filtrar", 400);
                     } 
+                    
                     //Coinciden los nombres de todos los query keys con las columnas. Verificar que estén seteados.
                     $condition = null;
                     foreach($queryParams as $queryKey => $queryValue) {

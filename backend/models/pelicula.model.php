@@ -10,7 +10,7 @@
 
         public function getMovie($id) {
             $query = $this->db->prepare(
-                'SELECT * FROM peliculas WHERE id=?'
+                'SELECT * FROM pelicula WHERE id=?'
             );
             $query->execute([$id]);
             $movie = $query->fetch(PDO::FETCH_OBJ);
@@ -42,7 +42,7 @@
             $offset = $page * $limit;
 
             $query = $this->db->prepare(
-                "SELECT * FROM peliculas ORDER BY $sort $order LIMIT ?, ?"
+                "SELECT * FROM pelicula ORDER BY $sort $order LIMIT ?, ?"
             ); //NOTA: en mysql no existe el offset, es el primer parámetro del limit. 
             $query->execute([$offset, $limit]);
 
@@ -53,7 +53,7 @@
 
         public function addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {   
             $query = $this->db->prepare(
-                'INSERT INTO peliculas(titulo, duracion, imagen, precio, descripcion, fecha_lanzamiento, atp, director_id, genero, distribuidora) 
+                'INSERT INTO pelicula(titulo, duracion, imagen, precio, descripcion, fecha_lanzamiento, atp, director_id, genero, distribuidora) 
                 VALUES (?,?,?,?,?,?,?,?,?,?)'
             );
             $query->execute([$titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora]);
@@ -61,11 +61,13 @@
             return $this->db->lastInsertId();
         }
         public function fetchColumnsMovies() {
-            $query = $this->db->prepare('SHOW COLUMNS FROM peliculas'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
+            
+            $query = $this->db->prepare('SHOW COLUMNS FROM pelicula'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
+            
             $query->execute();
             
-
-            $columns = $query->fetchAll(PDO::FETCH_OBJ); //me devuelve un array de objetos, cada objeto es una columna de la tabla peliculas, el primer atributo es field que es el nombre de la columna el resto son el tipo que admite, si puede ser null o no, etc
+            
+            $columns = $query->fetchAll(PDO::FETCH_OBJ); //me devuelve un array de objetos, cada objeto es una columna de la tabla pelicula, el primer atributo es field que es el nombre de la columna el resto son el tipo que admite, si puede ser null o no, etc
             $fields = []; //tendra los nombres de las columnas
             foreach ($columns as $col) {
                 array_push($fields, $col->Field); //creo un arreglo que tenga solo los nombres de las columnas
@@ -76,7 +78,7 @@
 
         public function editMovie($id, $titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {
             $query = $this->db->prepare('
-                UPDATE peliculas 
+                UPDATE pelicula 
                 SET titulo = ?, duracion = ?, imagen = ?, precio = ?, descripcion = ?, fecha_lanzamiento = ?, atp = ?, director_id = ?, genero = ?, distribuidora = ?
                 WHERE id = ?
             ');
@@ -90,7 +92,7 @@
         }
 
         public function deleteMovie($id) {
-            $query = $this->db->prepare('DELETE FROM peliculas WHERE id = ?');
+            $query = $this->db->prepare('DELETE FROM pelicula WHERE id = ?');
             $query->execute([$id]);
 
              if ($query->rowCount() > 0) {
@@ -103,7 +105,7 @@
 
         public function filtrarMovies($consulta) {
             $query = $this->db->prepare(
-                "SELECT * FROM peliculas WHERE = ?"
+                "SELECT * FROM pelicula WHERE = ?"
             );
             $query->execute([$consulta]);
             $movies = $query->fetchAll(PDO::FETCH_OBJ);
