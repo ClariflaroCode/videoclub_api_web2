@@ -1,24 +1,22 @@
 <?php
-    class PeliculaModel extends model {
+
+    require_once './models/model.php';
+
+    class PeliculaModel extends Model {
         function __construct() {
+            
             parent::__construct();
         }
 
         public function getMovie($id) {
             $query = $this->db->prepare(
-                'SELECT * FROM pelicula WHERE id=?'
+                'SELECT * FROM peliculas WHERE id=?'
             );
             $query->execute([$id]);
             $movie = $query->fetch(PDO::FETCH_OBJ);
             return $movie;
         }
-        public function getMovies($queryParams) {
-
-
-
-            /**PREGUNTAR SI ESTO IRÍA ACÁ, SI SE PUEDE PONER COMO PARÁMETROS FALTANTES, SI PUEDE HABER PARÁMETROS FALTANTES 
-             * ENTRE MEDIO DE UNOS QUE NO O SI ESTOS VAN EN EL CONTROLADOR*/
-            
+        public function getMovies($queryParams) {         
             
             
             $limit = $queryParams['limit'] ?? 10; // si existe el query param limit se asigna ese a limit, si no, se asigna 10. 
@@ -27,20 +25,24 @@
             $order = $queryParams['order'] ?? "ASC";
 
             //verifico que el sort sea una columna válida
-             $validColumns = ["id", "titulo", "precio", "fecha_lanzamiento", "duracion", "genero", "distribuidora", "director_id"];
-                if (!in_array($sort, $validColumns)) {
-                    $sort = "id";
-                }
+             $validColumns = fetchColumnsMovies();
+            if (!in_array($sort, $validColumns)) {
+                $sort = "id";
+            }
 
-                //valido el order
-                if ($order != "ASC" && $order != "DESC") {
-                    $order = "ASC";
-                }
+            //valido el order
+            if ($order != "ASC" && $order != "DESC") {
+                $order = "ASC";
+            }
+            if($limit <= 0 || $page <= 0) {
+                $page = 0;
+                $limit = 10;
+            } 
 
             $offset = $page * $limit;
 
             $query = $this->db->prepare(
-                "SELECT * FROM pelicula ORDER BY $sort $order LIMIT ?, ?"
+                "SELECT * FROM peliculas ORDER BY $sort $order LIMIT ?, ?"
             ); //NOTA: en mysql no existe el offset, es el primer parámetro del limit. 
             $query->execute([$offset, $limit]);
 
@@ -51,15 +53,15 @@
 
         public function addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {   
             $query = $this->db->prepare(
-                'INSERT INTO pelicula(titulo, duracion, imagen, precio, descripcion, fecha_lanzamiento, atp, director_id, genero, distribuidora) 
-                VALUES (?,?,?,?,?,?,?,?,?,?)';
+                'INSERT INTO peliculas(titulo, duracion, imagen, precio, descripcion, fecha_lanzamiento, atp, director_id, genero, distribuidora) 
+                VALUES (?,?,?,?,?,?,?,?,?,?)'
             );
             $query->execute([$titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora]);
             
             return $this->db->lastInsertId();
         }
         public function fetchColumnsMovies() {
-            $query = $this->db->prepare('SHOW COLUMNS FROM pelicula'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
+            $query = $this->db->prepare('SHOW COLUMNS FROM peliculas'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
             $query->execute();
             
 
@@ -74,13 +76,13 @@
 
         public function editMovie($id, $titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {
             $query = $this->db->prepare('
-                UPDATE pelicula 
+                UPDATE peliculas 
                 SET titulo = ?, duracion = ?, imagen = ?, precio = ?, descripcion = ?, fecha_lanzamiento = ?, atp = ?, director_id = ?, genero = ?, distribuidora = ?
                 WHERE id = ?
             ');
             $query->execute([$titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora, $id]);
             
-            if ($query->rowCount() > 0) {
+            if ($query->rowCount() > 0) { //muestra la cantidad de columnas modificadas. 
                 return $id; // se modificó correctamente devuelvo el mismo ID
             } else {
                 return false; // no se modificó nada
@@ -88,7 +90,7 @@
         }
 
         public function deleteMovie($id) {
-            $query = $this->db->prepare('DELETE FROM pelicula WHERE id = ?');
+            $query = $this->db->prepare('DELETE FROM peliculas WHERE id = ?');
             $query->execute([$id]);
 
              if ($query->rowCount() > 0) {
@@ -101,21 +103,13 @@
 
         public function filtrarMovies($consulta) {
             $query = $this->db->prepare(
-                "SELECT * FROM pelicula WHERE = ?"
+                "SELECT * FROM peliculas WHERE = ?"
             );
             $query->execute([$consulta]);
             $movies = $query->fetchAll(PDO::FETCH_OBJ);
             return $movies;
         }
-        public function paginar($limit= 10, $page = 0) {
-            $query = $this->db->prepare(
-                'SELECT * FROM pelicula LIMIT =? OFFSET =?'
-            );
-            //limit y offset es dinamico
-            $query->execute([$limit, $page]);
-            $movies = $query->fetchAll(PDO::FETCH_OBJ);
-            return $movies;
-        }
+       
 
         
     }

@@ -1,11 +1,13 @@
 <?php
-    require_once '../models/pelicula.model.php';
-    
+    require_once('./models/pelicula.model.php');
+
+   
     class PeliculaController {
         private $model;
         private $queryParamsGenericos;
 
         public function __construct() {
+            
             $this->model = new PeliculaModel();
             $this->queryParamsGenericos = ["sort", "order", "page", "limit"];
         }
@@ -87,7 +89,9 @@
             }
 
         }
-
+        public function getMoviess($req, $res) {
+            echo "holaaaa";
+        }
         //GET para /peliculas
         public function getMovies($req, $res){
             
