@@ -1,12 +1,13 @@
 <?php
-    class PeliculaModel {
+    class PeliculaModel extends model {
         function __construct() {
-            parent::construct();
+            parent::__construct();
         }
+
         public function getMovie($id) {
             $query = $this->db->prepare(
                 'SELECT * FROM pelicula WHERE id=?'
-            )
+            );
             $query->execute([$id]);
             $movie = $query->fetch(PDO::FETCH_OBJ);
             return $movie;
@@ -20,33 +21,45 @@
             
             
             
-            $limit = $queryParams->limit ?? 10; // si existe el query param limit se asigna ese a limit, si no, se asigna 10. 
-            $page = $queryParams->page ?? 0;
-            $sort = $queryParams->sort ?? "id";
-            $order = $queryParams->order ?? "ASC";
+            $limit = $queryParams['limit'] ?? 10; // si existe el query param limit se asigna ese a limit, si no, se asigna 10. 
+            $page = $queryParams['page'] ?? 0;
+            $sort = $queryParams['sort'] ?? "id";
+            $order = $queryParams['order'] ?? "ASC";
+
+            //verifico que el sort sea una columna válida
+             $validColumns = ["id", "titulo", "precio", "fecha_lanzamiento", "duracion", "genero", "distribuidora", "director_id"];
+                if (!in_array($sort, $validColumns)) {
+                    $sort = "id";
+                }
+
+                //valido el order
+                if ($order != "ASC" && $order != "DESC") {
+                    $order = "ASC";
+                }
+
+            $offset = $page * $limit;
 
             $query = $this->db->prepare(
-                'SELECT * FROM pelicula ORDER BY =? =? LIMIT =? =?'
+                "SELECT * FROM pelicula ORDER BY $sort $order LIMIT ?, ?"
             ); //NOTA: en mysql no existe el offset, es el primer parámetro del limit. 
-            $query->execute([$sort, $order, $offset, $limit ]);
+            $query->execute([$offset, $limit]);
 
             $movies = $query->fetchAll(PDO::FETCH_OBJ);
             return $movies;
 
-
         }
 
-        public function insertMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {   
+        public function addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {   
             $query = $this->db->prepare(
                 'INSERT INTO pelicula(titulo, duracion, imagen, precio, descripcion, fecha_lanzamiento, atp, director_id, genero, distribuidora) 
                 VALUES (?,?,?,?,?,?,?,?,?,?)';
-            )
+            );
             $query->execute([$titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora]);
             
-            return lastInsertID();
+            return $this->db->lastInsertId();
         }
         public function fetchColumnsMovies() {
-            $query = $this->db->prepare('SHOW COLUMNS FROM peliculas'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
+            $query = $this->db->prepare('SHOW COLUMNS FROM pelicula'); //https://youtu.be/iGlKzWjs_i8?si=EZalmWrG5UBq-E2G (es una funcion exclusiva de mysql pero no devuelve solo el nombre, devuelve informacion de las columnas tamb)
             $query->execute();
             
 
@@ -58,6 +71,33 @@
 
             return $fields;
         }
+
+        public function editMovie($id, $titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora) {
+            $query = $this->db->prepare('
+                UPDATE pelicula 
+                SET titulo = ?, duracion = ?, imagen = ?, precio = ?, descripcion = ?, fecha_lanzamiento = ?, atp = ?, director_id = ?, genero = ?, distribuidora = ?
+                WHERE id = ?
+            ');
+            $query->execute([$titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora, $id]);
+            
+            if ($query->rowCount() > 0) {
+                return $id; // se modificó correctamente devuelvo el mismo ID
+            } else {
+                return false; // no se modificó nada
+            }
+        }
+
+        public function deleteMovie($id) {
+            $query = $this->db->prepare('DELETE FROM pelicula WHERE id = ?');
+            $query->execute([$id]);
+
+             if ($query->rowCount() > 0) {
+                return $id; // devuelve el id de la película eliminada
+            } else {
+                return false; // no se encontró ninguna película con ese id
+            }
+        }
+
 
         public function filtrarMovies($consulta) {
             $query = $this->db->prepare(

@@ -8,11 +8,14 @@
 
     $router->addRoute('auth/login', 'GET',  'AuthApiController',    'login');
 
-
-    $router->addRoute('peliculas/:id', 'GET', 'AdminApiController', 'getMovie');
+    $router->addRoute('peliculas', 'GET', 'PeliculaController', 'getMovies');
+    $router->addRoute('peliculas/:id', 'GET', 'PeliculaController', 'getMovie');
     
     $router->addMiddleware(new GuardMiddleware());
-    $router->addRoute('peliculas', 'POST', 'AdminApiController', 'insertMovie');
+    //Rutas protegidas que requieren autenticación
+    $router->addRoute('peliculas', 'POST', 'PeliculaController', 'addMovie');
+    $router->addRoute('peliculas/:id', 'PUT', 'PeliculaController', 'editMovie');
+    $router->addRoute('peliculas/:id', 'DELETE', 'PeliculaController', 'deleteMovie');
     
 
 

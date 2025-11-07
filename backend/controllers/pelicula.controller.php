@@ -1,21 +1,24 @@
 <?php
     require_once '../models/pelicula.model.php';
     
-
-
     class PeliculaController {
         private $model;
-        private $queryParamsOrden;
-        private $queryParamsPaginado;
+        private $queryParamsGenericos;
 
         public function __construct() {
             $this->model = new PeliculaModel();
             $this->queryParamsGenericos = ["sort", "order", "page", "limit"];
         }
-        public function  addMovie($req, $res) {            
-            if($this->validateMovies($req)) {
-                $movies = $this->model->addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
-                if (is_bool($movies)) {
+
+        //POST para /peliculas
+        public function  addMovie($req, $res) {   
+            //verifico que el usuario este autenticado
+            if (empty($req->user)) {
+                return $res->json("Unauthorized", 401);
+            }         
+            if($this->validateEditOrAddMovies($req)){
+                $id = $this->model->addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
+                if (!$id) {
                     return $res->json("No se pudo insertar la nueva película", 500);
                 } 
                 return $res->json("La pelicula fue agregada con éxito", 201);
@@ -23,12 +26,53 @@
             
 
         }
+
+        //PUT para /peliculas/:id
         public function editMovie($req, $res) {
+            if (empty($req->user)) {
+                return $res->json("Unauthorized", 401);
+            }
 
-        }
-        public function deleteMovie($req, $res){
+            $id = $req->params->id;
 
+            if (!is_numeric($id) || $id <= 0) {
+                return $res->json("ID inválido", 400);
+            }
+
+            if ($this->validateEditOrAddMovies($req)) {
+                $id = $this->model->editMovie($id, $titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
+
+                if ($id) {
+                    return $res->json("Película actualizada correctamente", 200);
+                } else {
+                    return $res->json("No se encontró la película o no hubo cambios", 404);
+                }
+            }
         }
+
+        //DELETE para /peliculas/:id
+        public function deleteMovie($req, $res) {
+            if (empty($req->user)) {
+                return $res->json("Unauthorized", 401);
+            }
+
+            $id = $req->params->id;
+
+            if (!is_numeric($id) || $id <= 0) {
+                return $res->json("ID inválido", 400);
+            }
+
+            $peliculaEliminada = $this->model->deleteMovie($id);
+
+            if ($peliculaEliminada) {
+                return $res->json("Película eliminada correctamente. ID: " . $peliculaEliminada, 200);
+            } else {
+                return $res->json("No se encontró la película a eliminar", 404);
+            }
+        }
+
+
+        //GET para /peliculas/:id
         public function getMovie($req, $res){
             $id = $req->params->id; 
             if (!is_int($id) || $id <= 0) {
@@ -43,6 +87,8 @@
             }
 
         }
+
+        //GET para /peliculas
         public function getMovies($req, $res){
             
             $queryParams = (array) $req->query; //lo vuelve un arreglo asociativo/diccionario al objeto, asi que sus atributos pasan a ser keys. 
@@ -79,9 +125,6 @@
             $movies = $this->model->getMovies($req->query);
             return $res->json($movies, 200);
             
-            
-
-
         }
         private function verificarFecha($fecha) {
             $arregloFecha = explode("-", $fecha);
@@ -134,6 +177,5 @@
         }
 
     }
-
 
 ?>
