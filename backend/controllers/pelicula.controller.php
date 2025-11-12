@@ -18,8 +18,17 @@
             if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
             }         
+
+            $body = $req->body ?? null;
+
+            if (!$body){
+                return $res->json("Body inválido", 400);
+            }
+
+
+
             if($this->validateEditOrAddMovies($req)){
-                $id = $this->model->addMovie($titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
+                $id = $this->model->addMovie($body->titulo, $body->duracion, $body->imagen, $body->precio, $body->descripcion, $body->fecha_lanzamiento, $body->atp, $body->director_id, $body->genero, $body->distribuidora);
                 if (!$id) {
                     return $res->json("No se pudo insertar la nueva película", 500);
                 } 
@@ -36,13 +45,18 @@
             }
 
             $id = $req->params->id;
+            $body = $req->body ?? null;
+
+            if (!$body){
+                return $res->json("Body inválido", 400);
+            }
 
             if (!is_numeric($id) || $id <= 0) {
                 return $res->json("ID inválido", 400);
             }
 
             if ($this->validateEditOrAddMovies($req)) {
-                $id = $this->model->editMovie($id, $titulo, $duracion, $imagen, $precio, $descripcion, $fecha_lanzamiento, $atp, $director_id, $genero, $distribuidora);
+                $id = $this->model->editMovie($id, $body->titulo, $body->duracion, $body->imagen, $body->precio, $body->descripcion, $body->fecha_lanzamiento, $body->atp, $body->director_id, $body->genero, $body->distribuidora);
 
                 if ($id) {
                     return $res->json("Película actualizada correctamente", 200);
@@ -76,7 +90,7 @@
 
         //GET para /pelicula/:id
         public function getMovie($req, $res){
-            $id = $req->params->id; 
+            $id = (int) $req->params->id; 
             if (!is_int($id) || $id <= 0) {
                 return $res->json("", 400);
             } 
@@ -99,7 +113,7 @@
             
             if (count($queryParams) > 0) {
                 $queryKeys = array_keys($queryParams);
-                if (count (array_intersect($queryKeys, $this->queryParamsGenericos)) == 0) { //los query params que hay son de filtrado. No se me ocurre como acumularlos. 
+                if (count (array_intersect($queryKeys, $this->queryParamsGenericos)) == 0) {
                     //FILTRADO
                     
                     $columns = $this->model->fetchColumnsMovies();

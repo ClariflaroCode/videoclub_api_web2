@@ -25,7 +25,7 @@
             $order = $queryParams['order'] ?? "ASC";
 
             //verifico que el sort sea una columna válida
-             $validColumns = fetchColumnsMovies();
+             $validColumns = $this->fetchColumnsMovies();
             if (!in_array($sort, $validColumns)) {
                 $sort = "id";
             }

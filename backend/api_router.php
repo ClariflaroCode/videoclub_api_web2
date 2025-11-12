@@ -5,18 +5,18 @@
     
     $router = new Router();
 
-    //$router->addMiddleware(new JWTMiddleware());
+    $router->addMiddleware(new JWTMiddleware());
 
     //$router->addRoute('auth/login', 'GET',  'AuthApiController',    'login');
     
-    $router->addRoute('pelicula', 'GET', 'PeliculaController', 'getMovies');
-    //$router->addRoute('pelicula/:id', 'GET', 'PeliculaController', 'getMovie');
+    $router->addRoute('peliculas', 'GET', 'PeliculaController', 'getMovies');
+    $router->addRoute('peliculas/:id', 'GET', 'PeliculaController', 'getMovie');
     
-    //$router->addMiddleware(new GuardMiddleware());
+    $router->addMiddleware(new GuardMiddleware());
     //Rutas protegidas que requieren autenticación
-    //$router->addRoute('pelicula', 'POST', 'PeliculaController', 'addMovie');
-    //$router->addRoute('pelicula/:id', 'PUT', 'PeliculaController', 'editMovie');
-    //$router->addRoute('pelicula/:id', 'DELETE', 'PeliculaController', 'deleteMovie');
+    $router->addRoute('peliculas', 'POST', 'PeliculaController', 'addMovie');
+    $router->addRoute('peliculas/:id', 'PUT', 'PeliculaController', 'editMovie');
+    $router->addRoute('peliculas/:id', 'DELETE', 'PeliculaController', 'deleteMovie');
     
 
 
