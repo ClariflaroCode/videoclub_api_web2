@@ -5,14 +5,14 @@
     
     $router = new Router();
 
-    //$router->addMiddleware(new JWTMiddleware());
+    $router->addMiddleware(new JWTMiddleware());
 
     //$router->addRoute('auth/login', 'GET',  'AuthApiController',    'login');
     
     $router->addRoute('peliculas', 'GET', 'PeliculaController', 'getMovies');
     $router->addRoute('peliculas/:id', 'GET', 'PeliculaController', 'getMovie');
     
-    //$router->addMiddleware(new GuardMiddleware());
+    $router->addMiddleware(new GuardMiddleware());
     //Rutas protegidas que requieren autenticación
     $router->addRoute('peliculas', 'POST', 'PeliculaController', 'addMovie');
     $router->addRoute('peliculas/:id', 'PUT', 'PeliculaController', 'editMovie');
@@ -23,11 +23,3 @@
 $router->route($_GET["resource"], $_SERVER['REQUEST_METHOD']);
 
 
-/*
-    ORDER BY =:ORDER
-
-    IF ORDERBY
-    QUERY->BIND PARAM(:ORDER,VALOR)
-
-    order by =? */
-    

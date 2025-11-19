@@ -15,9 +15,9 @@
         //POST para /pelicula
         public function  addMovie($req, $res) {   
             //verifico que el usuario este autenticado
-            /*if (empty($req->user)) {
+            if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            } */        
+            }        
 
             $body = $req->body ?? null;
 
@@ -40,9 +40,9 @@
 
         //PUT para /pelicula/:id
         public function editMovie($req, $res) {
-            /*if (empty($req->user)) {
+            if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            }*/
+            }
 
             $id = $req->params->id;
             $body = $req->body ?? null;
@@ -68,9 +68,9 @@
 
         //DELETE para /pelicula/:id
         public function deleteMovie($req, $res) {
-            /*if (empty($req->user)) {
+            if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            }*/
+            }
 
             $id = $req->params->id;
 
