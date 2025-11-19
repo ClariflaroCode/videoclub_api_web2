@@ -22,7 +22,7 @@
             $body = $req->body ?? null;
 
             if (!$body){
-                return $res->json("Body inválido", 400);
+                return $res->json("No se enviaron datos", 400);
             }
 
 
@@ -48,7 +48,7 @@
             $body = $req->body ?? null;
 
             if (!$body){
-                return $res->json("Body inválido", 400);
+                return $res->json("No se enviaron datos", 400);
             }
 
             if (!is_numeric($id) || $id <= 0) {
@@ -92,20 +92,18 @@
         public function getMovie($req, $res){
             $id = (int) $req->params->id; 
             if (!is_int($id) || $id <= 0) {
-                return $res->json("", 400);
+                return $res->json("ID inválido", 400);
             } 
             $movie = $this->model->getMovie($id);
             if (is_bool($movie)) { //devuelve un bool si la consulta fallo
-                return $res->json("", 404); 
+                return $res->json("No se pudo obtener la película", 404); 
             } else {
                 return $res->json($movie, 200);
 
             }
 
         }
-        public function getMoviess($req, $res) {
-            echo "holaaaa";
-        }
+
         //GET para /pelicula
         public function getMovies($req, $res){
             
