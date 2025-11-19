@@ -15,9 +15,9 @@
         //POST para /pelicula
         public function  addMovie($req, $res) {   
             //verifico que el usuario este autenticado
-            if (empty($req->user)) {
+            /*if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            }         
+            } */        
 
             $body = $req->body ?? null;
 
@@ -27,7 +27,7 @@
 
 
 
-            if($this->validateEditOrAddMovies($req)){
+            if($this->validateEditOrAddMovies($req,$res)){
                 $id = $this->model->addMovie($body->titulo, $body->duracion, $body->imagen, $body->precio, $body->descripcion, $body->fecha_lanzamiento, $body->atp, $body->director_id, $body->genero, $body->distribuidora);
                 if (!$id) {
                     return $res->json("No se pudo insertar la nueva película", 500);
@@ -40,9 +40,9 @@
 
         //PUT para /pelicula/:id
         public function editMovie($req, $res) {
-            if (empty($req->user)) {
+            /*if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            }
+            }*/
 
             $id = $req->params->id;
             $body = $req->body ?? null;
@@ -55,7 +55,7 @@
                 return $res->json("ID inválido", 400);
             }
 
-            if ($this->validateEditOrAddMovies($req)) {
+            if ($this->validateEditOrAddMovies($req,$res)) {
                 $id = $this->model->editMovie($id, $body->titulo, $body->duracion, $body->imagen, $body->precio, $body->descripcion, $body->fecha_lanzamiento, $body->atp, $body->director_id, $body->genero, $body->distribuidora);
 
                 if ($id) {
@@ -68,9 +68,9 @@
 
         //DELETE para /pelicula/:id
         public function deleteMovie($req, $res) {
-            if (empty($req->user)) {
+            /*if (empty($req->user)) {
                 return $res->json("Unauthorized", 401);
-            }
+            }*/
 
             $id = $req->params->id;
 
@@ -106,8 +106,12 @@
 
         //GET para /pelicula
         public function getMovies($req, $res){
-            
+
             $queryParams = (array) $req->query; //lo vuelve un arreglo asociativo/diccionario al objeto, asi que sus atributos pasan a ser keys. 
+    
+            unset($queryParams['resource']); //elimino el resource que viene en la query porque no es un parametro para filtrar
+
+         
             
             if (count($queryParams) > 0) {
                 $queryKeys = array_keys($queryParams);
@@ -134,14 +138,13 @@
                             }
                         }
                     }
-                    
                     $movies = $this->model->filtrarMovies($condition); 
                     return $res->json($movies, 200); 
           
                 }
             } 
                     
-            $movies = $this->model->getMovies($req->query);
+            $movies = $this->model->getMovies($queryParams);
             return $res->json($movies, 200);
             
         }
@@ -160,7 +163,7 @@
             return true;
         }
 
-        private function validateEditOrAddMovies($req){
+        private function validateEditOrAddMovies($req, $res){
             
             if (empty($req->body->titulo) || !isset($req->body->titulo)) {
                 return $res->json("Falta enviar el titulo", 400);
@@ -180,7 +183,7 @@
              if (empty($req->body->fecha_lanzamiento)|| !isset($req->body->fecha_lanzamiento) || !$this->verificarFecha($req->body->fecha_lanzamiento)) {
                 return $res->json("Falta la fecha de lanzamiento", 400);
             }
-             if (empty($req->body->atp)|| !isset($req->body->atp)) { //AGREGAR CONTROLES. 
+             if ( !isset($req->body->atp)) { //AGREGAR CONTROLES. 
                 return $res->json("Falta determinar si es apta o no para todo público", 400);
             }
              if (empty($req->body->director_id)|| !isset($req->body->director_id)|| ((int)$req->body->duracion <= 0)) {
@@ -189,7 +192,7 @@
              if (empty($req->body->genero)|| !isset($req->body->genero)) {
                 return $res->json("Falta el genero de la pelicula", 400);
             }
-            if (empty($req->body->distribuidor)|| !isset($req->body->distribuidor)) {
+            if (empty($req->body->distribuidora)|| !isset($req->body->distribuidora)) {
                 return $res->json("Falta la distribuidora de la pelicula", 400);
             }
             return true;
