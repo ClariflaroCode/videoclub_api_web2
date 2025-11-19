@@ -1,3 +1,5 @@
+**ENTRAR EN MODO EDITAR PARA QUE SE VEA BIEN EL README**
+
 API RESTFUL de un catálogo de películas creada con PHP y MySQL para la materia de Web 2. 
 
 La API permite:
