@@ -132,9 +132,9 @@
                             return $res->json("Falta setear el valor del filtro" . $queryKey, 400);
                         } else {
                             if (is_null($condition)){
-                                $condition = $queryKey . "=" . $queryValue;
+                                $condition = $queryKey . "='" . $queryValue . "'";
                             } else {
-                                $condition = $condition . " AND " . $queryKey . "=" . $queryValue;
+                                $condition = $condition . " AND " . $queryKey . "='" . $queryValue . "'";
                             }
                         }
                     }
