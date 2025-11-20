@@ -110,7 +110,7 @@
             $queryParams = (array) $req->query; //lo vuelve un arreglo asociativo/diccionario al objeto, asi que sus atributos pasan a ser keys. 
     
             unset($queryParams['resource']); //elimino el resource que viene en la query porque no es un parametro para filtrar
-            $condition = null;
+            $filtros = null;
             
             if (count($queryParams) > 0) {
                 $queryKeys = array_keys($queryParams);
@@ -126,6 +126,7 @@
                     } 
                     
                     //Coinciden los nombres de todos los query keys con las columnas. Verificar que estén seteados.
+                    /*
                     foreach ($parametrosFiltro as $columna) {
                         $valor = $queryParams[$columna];
 
@@ -139,10 +140,20 @@
                             $condition = $condition . " AND " . $columna . "='" . $valor . "'";
                         }
                     }
+*/
+                    foreach ($parametrosFiltro as $columna ) {
+                        $valor = $queryParams[$columna];
+
+                        if (is_null($valor) || $valor == "") {
+                            return $res->json("Falta setear el valor del filtro: " . $columna, 400);
+                        }
+                        $filtros["$columna"] = $valor;
+                    }
                 }
+            }
           
-            }    
-            $movies = $this->model->getMovies($queryParams,$condition);
+             
+            $movies = $this->model->getMovies($queryParams,$filtros);
             return $res->json($movies, 200);
             
         }

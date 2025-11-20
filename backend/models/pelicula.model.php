@@ -16,7 +16,7 @@
             $movie = $query->fetch(PDO::FETCH_OBJ);
             return $movie;
         }
-        public function getMovies($queryParams, $filters = null) {         
+        public function getMovies($queryParams, $filtros = null) {         
             
             $limit = $queryParams['limit'] ?? 10; // si existe el query param limit se asigna ese a limit, si no, se asigna 10. 
             $page  = $queryParams['page']  ?? 0;
@@ -43,17 +43,27 @@
 
             $offset = $page * $limit;
 
-            if($filters == null){
+            if (!is_null($filtros)) {
+                $condition = null;
+                foreach($filtros as $columna => $valor) {
+                    if (is_null($condition)) {
+                        $condition = "$columna = ?";
+                    } else {
+                        $condition = $condition . " AND  $columna = ?";
+                    }
+                    $values[] = $valor;
+                }
+                $query = $this->db->prepare(
+                "SELECT * FROM pelicula WHERE $condition ORDER BY $sort $order LIMIT $offset, $limit"
+                );
+                $query->execute($values);
+            }
+            else {
                 $query = $this->db->prepare(
                 "SELECT * FROM pelicula ORDER BY $sort $order LIMIT $offset, $limit"
                 ); //NOTA: en mysql no existe el offset, es el primer parámetro del limit. 
                 $query->execute();
-            } else {
-                    $query = $this->db->prepare(
-                    "SELECT * FROM pelicula WHERE $filters ORDER BY $sort $order LIMIT $offset, $limit"
-                    );
-                    $query->execute();
-                }
+            } 
 
             $movies = $query->fetchAll(PDO::FETCH_OBJ);
             return $movies;
