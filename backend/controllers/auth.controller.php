@@ -17,14 +17,14 @@
             $algoritmo = explode(' ', $auth);
             if (count($algoritmo) != 2 || $algoritmo[0] != 'Basic') {
                 header("WWW-Authenticate: Basic realm='Get a token'");
-                return $res->json("Autenticación no valida", 401);
+                return $res->json("Autenticación no valida 1", 401);
             }
            
 
             $usuario_contrasenia = base64_decode($algoritmo[1]);
             $partes = explode(':', $usuario_contrasenia);
             if (count($partes) != 2) {
-                return $res->json("Autenticación no valida", 401);
+                return $res->json("Autenticación no valida 2", 401);
             }
             $user = $partes[0];
             $contrasenia = $partes[1];

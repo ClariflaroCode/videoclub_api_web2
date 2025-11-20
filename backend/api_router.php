@@ -2,12 +2,15 @@
     require_once './libs/router/router.php';
     require_once './libs/jwt/jwt.middleware.php';
     require_once './controllers/pelicula.controller.php';
+    require_once './middleware/guard.middleware.php';
+    require_once './controllers/auth.controller.php';
+
     
     $router = new Router();
 
-    $router->addMiddleware(new JWTMiddleware());
 
-    //$router->addRoute('auth/login', 'GET',  'AuthApiController',    'login');
+    $router->addRoute('auth/login', 'GET',  'AuthApiController',    'login');
+    $router->addMiddleware(new JWTMiddleware());
     
     $router->addRoute('peliculas', 'GET', 'PeliculaController', 'getMovies');
     $router->addRoute('peliculas/:id', 'GET', 'PeliculaController', 'getMovie');
