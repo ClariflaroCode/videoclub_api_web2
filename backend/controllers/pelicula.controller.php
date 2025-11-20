@@ -110,41 +110,44 @@
             $queryParams = (array) $req->query; //lo vuelve un arreglo asociativo/diccionario al objeto, asi que sus atributos pasan a ser keys. 
     
             unset($queryParams['resource']); //elimino el resource que viene en la query porque no es un parametro para filtrar
-
-         
+            $condition = null;
             
             if (count($queryParams) > 0) {
                 $queryKeys = array_keys($queryParams);
-                if (count (array_intersect($queryKeys, $this->queryParamsGenericos)) == 0) {
+                $columns = $this->model->fetchColumnsMovies();
+                $parametrosFiltro = array_intersect($queryKeys, $columns);
+                $parametrosGenericos = array_intersect($queryKeys, $this->queryParamsGenericos);
+
+                if (count($parametrosFiltro) > 0) {
                     //FILTRADO
                     
-                    $columns = $this->model->fetchColumnsMovies();
-                    $params_verificados = array_intersect($queryKeys, $columns);
-                    
-                    if (count($params_verificados) != count($queryKeys))  {
+                    if ((count($parametrosFiltro) + count($parametrosGenericos)) != count($queryKeys))  {
                         return $res->json("Bad request, revisar los nombres de los parámetros enviados para filtrar", 400);
                     } 
                     
                     //Coinciden los nombres de todos los query keys con las columnas. Verificar que estén seteados.
-                    $condition = null;
-                    foreach($queryParams as $queryKey => $queryValue) {
-                        if (is_null($queryValue) || $queryValue == "") {
-                            return $res->json("Falta setear el valor del filtro" . $queryKey, 400);
+                    foreach ($parametrosFiltro as $columna) {
+                        $valor = $queryParams[$columna];
+
+                        if (is_null($valor) || $valor == "") {
+                            return $res->json("Falta setear el valor del filtro: " . $columna, 400);
+                        }
+
+                        if (is_null($condition)) {
+                            $condition = $columna . "='" . $valor . "'";
                         } else {
-                            if (is_null($condition)){
-                                $condition = $queryKey . "='" . $queryValue . "'";
-                            } else {
-                                $condition = $condition . " AND " . $queryKey . "='" . $queryValue . "'";
-                            }
+                            $condition = $condition . " AND " . $columna . "='" . $valor . "'";
                         }
                     }
-                    $movies = $this->model->filtrarMovies($condition); 
-                    return $res->json($movies, 200); 
-          
                 }
-            } 
-                    
-            $movies = $this->model->getMovies($queryParams);
+
+                    if (!is_null($condition)) {
+                        $movies = $this->model->getMovies($queryParams, $condition);
+                        return $res->json($movies, 200);
+                    }  
+          
+                }    
+            $movies = $this->model->getMovies($queryParams,null);
             return $res->json($movies, 200);
             
         }
