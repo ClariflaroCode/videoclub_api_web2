@@ -140,28 +140,23 @@
                         }
                     }
                 }
-
-                    if (!is_null($condition)) {
-                        $movies = $this->model->getMovies($queryParams, $condition);
-                        return $res->json($movies, 200);
-                    }  
           
-                }    
-            $movies = $this->model->getMovies($queryParams,null);
+            }    
+            $movies = $this->model->getMovies($queryParams,$condition);
             return $res->json($movies, 200);
             
         }
         private function verificarFecha($fecha) {
             $arregloFecha = explode("-", $fecha);
             if (count($arregloFecha) != 3) {
-                return $res->json("Error en el formato de la fecha", 400);
+                return false;
             }
             $anio = (int) $arregloFecha[0]; 
             $mes = (int) $arregloFecha[1];
             $dia = (int) $arregloFecha[2];
 
             if (!checkdate($mes, $dia, $anio)) {
-                return $res->json("La fecha es invalida", 400 );
+                return false;
             } 
             return true;
         }
