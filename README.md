@@ -32,3 +32,17 @@ Las operaciones de escritura (`POST`, `PUT`, `DELETE`) están protegidas mediant
 | limit | Cantidad de resultados por página | limit=5 |
 | *(cualquier campo de la tabla)* | Filtrado exacto por valor | genero=Acción |
 
+Ejemplo para conocer la estructura del body y utilizar en el POST O PUT: 
+
+{
+    "titulo": "tiburon",
+    "duracion": 120,
+    "imagen": "https://www.lascosasquenoshacenfelices.com/wp-content/uploads/2025/06/Tiburon-las-cosas-felices.01-e1749284997448.jpg",
+    "precio": 120,
+    "descripcion": "Un gigantesco tiburón blanco amenaza a los habitantes y turistas de un pueblo costero. El alcalde encomienda la caza del escualo al jefe de         la policía, un pescador y un científico. El grupo se da cuenta de que es un animal inteligente y violento.",
+    "fecha_lanzamiento": "1975-06-20",
+    "atp": 0,
+    "director_id": 4,
+    "genero": "animales",
+    "distribuidora": "universal pictures"
+    }
