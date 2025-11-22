@@ -46,3 +46,6 @@ Ejemplo para conocer la estructura del body y utilizar en el POST O PUT:
     "genero": "animales",
     "distribuidora": "universal pictures"
     }
+
+El prefijo para las consultas una vez descargado el proyecto en la carpeta htdocs de XAMPP, debe ser: http://localhost/proyectos/videoclub_api_web2/backend/api/ 
+Para autenticarse es con http://localhost/proyectos/videoclub_api_web2/backend/api/auth/login y utilizar el usuario y contraseña (usuario: webadmin, contraseña:admin) en la parte del basic. Se debe copiar el token que devuelve la aplicación sin las comillas en el bearer y luego hacer las peticiones a peliculas pertinentes. 
